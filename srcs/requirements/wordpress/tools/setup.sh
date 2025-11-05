@@ -15,7 +15,7 @@ DB_HOST="${WP_DB_HOST:-mariadb}"
 
 WP_DIR="/var/www/wordpress"
 
-echo "🔧 WordPress entrypoint: ensure directories & permissions..."
+echo " WordPress entrypoint: ensure directories & permissions..."
 # Ensure runtime dirs exist and owned by www-data
 mkdir -p "$WP_DIR"
 mkdir -p /run/php
@@ -24,16 +24,16 @@ chmod -R 755 "$WP_DIR"
 # wp-config may contain secrets -> make owner readable by www-data only
 # We'll adjust after download/install below.
 
-echo "⏳ Waiting for MariaDB at ${DB_HOST}..."
+echo " Waiting for MariaDB at ${DB_HOST}..."
 until mysqladmin ping -h "${DB_HOST}" -u root -p"${MYSQL_ROOT_PASSWORD}" --silent 2>/dev/null; do
     echo "MariaDB not ready yet..."
     sleep 2
 done
-echo "✅ MariaDB is ready!"
+echo " MariaDB is ready!"
 
 # Download WordPress core if not present (run as root, but files will be chowned after)
 if [ ! -f "${WP_DIR}/wp-load.php" ]; then
-    echo "📦 Downloading WordPress core..."
+    echo " Downloading WordPress core..."
     cd "$WP_DIR"
     wp core download --allow-root --quiet
 fi
@@ -55,7 +55,7 @@ else
 fi
 
 # Ensure correct ownership and safe permissions after WP files exist
-echo "🔐 Fixing file ownership & permissions for WordPress..."
+echo " Fixing file ownership & permissions for WordPress..."
 chown -R www-data:www-data "$WP_DIR"
 # directories 755, files 644 (except wp-config.php)
 find "$WP_DIR" -type d -exec chmod 755 {} \;
